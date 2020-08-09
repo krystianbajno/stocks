@@ -290,10 +290,6 @@ class TableResolver:
             if assetName in table.resolvableFor():
                 return table 
 
-class ServiceProvider:
-    def register(self):
-        pass
-
 class App:
     configuration = {}
     providers = {}
@@ -334,11 +330,28 @@ class App:
             thread = Thread(target=run_system, args=[system])
             thread.start()
 
-
-class AppServiceProvider(ServiceProvider):
+class Provider:
     def __init__(self, app: App):
         self.app = app
 
+    def register(self):
+        pass
+
+class AppEntityProvider(Provider):
+    def register(self):
+        self.app.registerEntity("state", {})
+
+class AppSystemProvider(Provider):
+    def register(self):
+        self.app.registerSystem(
+            lambda app: StateManagementSystem(app.make("StateManagement"), app.make("TableResolver"))
+        )
+
+        self.app.registerSystem(
+            lambda app: PrintStateSystem(app.make("StatePrinter"))
+        )
+
+class AppServiceProvider(Provider):
     def register(self):
         def bindForexApi(app):
             return ForexApi(requests, app.make("ForexDecryptor"))
@@ -352,8 +365,7 @@ class AppServiceProvider(ServiceProvider):
         def bindStateManagement(app):
             exchange_rate_factory = self.app.make("ExchangeRateFactory")
             instance = StateManagement(app.entities["state"], app.make("ExchangeRateUpdater"))
-            instance.initialize(map(lambda entity: exchange_rate_factory.create(entity["name"], entity["amount"]), app.config()["assets"])
-        )
+            instance.initialize(map(lambda entity: exchange_rate_factory.create(entity["name"], entity["amount"]), app.config()["assets"]))
             return instance
 
         self.app.bind("ForexDecryptor", lambda app: lambda x: ARC4.new(b'aaf6cb4f0ced8a211c2728328597268509ade33040233a11af').decrypt(bytearray.fromhex(x)).decode("UTF-8"))
@@ -371,9 +383,9 @@ class AppServiceProvider(ServiceProvider):
         self.app.bind("ExchangeRateFactory", lambda app: ExchangeRateFactory())
         self.app.bind("ExchangeRateUpdater", lambda app: ExchangeRateUpdater())
 
-        self.app.registerEntity("state", {})
         self.app.bind("StatePrinter", lambda app: StatePrinter(app.entities["state"]))
         self.app.bind("StateManagement", bindStateManagement)
+
 
 class System:
     def handle(self, entity):
@@ -424,15 +436,10 @@ def main():
     boot_application = App()
 
     boot_application.configure("assets", assets_configuration())
+
+    boot_application.register(__import__(__name__), "AppEntityProvider")
     boot_application.register(__import__(__name__), "AppServiceProvider")
-
-    boot_application.registerSystem(
-        lambda app: StateManagementSystem(app.make("StateManagement"), app.make("TableResolver"))
-    )
-
-    boot_application.registerSystem(
-        lambda app: PrintStateSystem(app.make("StatePrinter"))
-    )
+    boot_application.register(__import__(__name__), "AppSystemProvider")
 
     boot_application.run_systems(lambda: time.sleep(0.05))
 
