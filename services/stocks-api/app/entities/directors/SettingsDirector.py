@@ -1,5 +1,6 @@
 from app.entities.builders.EntityBuilder import EntityBuilder
 from app.entities.directors.Director import Director
+from app.enum.EntityEnum import EntityEnum
 
 
 class SettingsDirector(Director):
@@ -8,6 +9,6 @@ class SettingsDirector(Director):
         self._builder = builder
 
     def _create(self) -> None:
-        self._builder.set_id("settings")
+        self._builder.set_id(EntityEnum.SETTINGS.value)
         self._builder.add_component("should_update", self.__config["should_update"])
         self._builder.add_component("system_tick", self.__config["system_tick"])

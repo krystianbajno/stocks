@@ -1,5 +1,6 @@
 from app.entities.builders.EntityBuilder import EntityBuilder
 from app.entities.directors.Director import Director
+from app.enum.EntityEnum import EntityEnum
 from app.exchange_rates.ExchangeRateFactory import ExchangeRateFactory
 
 
@@ -21,7 +22,7 @@ class ExchangeRateStateDirector(Director):
                 asset["amount"]
             )
 
-        self._builder.set_id("exchange-rate-state")
+        self._builder.set_id(EntityEnum.EXCHANGE_RATE_STATE.value)
 
         for asset in self.__assets:
             self._builder.add_component(
