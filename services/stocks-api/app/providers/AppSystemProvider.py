@@ -1,6 +1,6 @@
 from app.providers.Provider import Provider
 from app.systems.ExchangeTablesRefreshSystem import ExchangeTablesRefreshSystem
-from app.systems.PrintStateSystem import PrintStateSystem
+from app.systems.RenderSystem import RenderSystem
 from app.systems.StateAssetsRefreshSystem import StateAssetsRefreshSystem
 
 
@@ -21,5 +21,5 @@ class AppSystemProvider(Provider):
         )
 
         self.app.add_system(
-            lambda app: PrintStateSystem(app.make("StatePrinter"))
+            lambda app: RenderSystem(app.make("RenderSystem"))
         )

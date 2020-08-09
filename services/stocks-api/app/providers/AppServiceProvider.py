@@ -7,7 +7,7 @@ from app.api.clients.coinbase.CoinbaseWebsocketClient import CoinbaseWebsocketCl
 from app.asset_tables.AssetTableResolver import AssetTableResolver
 from app.asset_tables.CryptoAssetTable import CryptoAssetTable
 from app.asset_tables.ForexAssetTable import ForexAssetTable
-from app.state.StatePrinter import StatePrinter
+from app.cli.CliView import CliView
 from app.exchange_rates.ExchangeRateFactory import ExchangeRateFactory
 from app.exchange_rates.ExchangeRateUpdater import ExchangeRateUpdater
 from app.providers.Provider import Provider
@@ -45,4 +45,4 @@ class AppServiceProvider(Provider):
         self.app.bind("ExchangeRateFactory", lambda app: ExchangeRateFactory())
         self.app.bind("ExchangeRateUpdater", lambda app: ExchangeRateUpdater())
 
-        self.app.bind("StatePrinter", lambda app: StatePrinter(app.entities))
+        self.app.bind("RenderSystem", lambda app: CliView(app.entities))

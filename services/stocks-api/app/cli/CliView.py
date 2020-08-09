@@ -1,7 +1,7 @@
 from app.cli.components.Loader import Loader
 
 
-class StatePrinter:
+class CliView:
     def __init__(self, state):
         self.state = state
         self.loader = Loader()
@@ -9,7 +9,7 @@ class StatePrinter:
     def __clear(self):
         print("\033[H\033[J")
 
-    def print(self):
+    def render(self):
         self.__clear()
         self.loader.step()
 
