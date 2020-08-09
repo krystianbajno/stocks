@@ -1,5 +1,7 @@
 import time
+
 import requests
+
 from app.api.AbstractApi import AbstractAPI
 
 
@@ -15,7 +17,7 @@ class ForexApi(AbstractAPI):
             return asset, bid
 
         response = self.decryptor(
-            self.client.get('https://www.oanda.com/lfr/rates_lrrr?tstamp='+str(int(time.time()))).text
+            self.client.get('https://www.oanda.com/lfr/rates_lrrr?tstamp=' + str(int(time.time()))).text
         )
 
         return map(unpack_asset_line, response.split('\n'))

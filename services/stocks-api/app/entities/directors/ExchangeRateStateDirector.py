@@ -28,4 +28,3 @@ class ExchangeRateStateDirector(Director):
             self._builder.add_component(
                 *create_component_from_asset(asset)
             )
-

@@ -31,6 +31,3 @@ class Entity:
 
     def get_components(self) -> dict:
         return self.components
-
-
-

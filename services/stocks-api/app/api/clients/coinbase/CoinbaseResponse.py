@@ -20,5 +20,3 @@ class CoinbaseResponse:
 
     def set_product_id(self, product_id):
         self.product_id = product_id
-
-        

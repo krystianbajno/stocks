@@ -10,6 +10,6 @@ class CryptoAssetTable(AbstractAssetTable):
         for product in self.api.get_assets_table():
             asset, bid, ask = product
             self.set_asset_exchange_info_by_code(asset, bid, ask)
-    
+
     def resolvable_for(self):
         return self.api.client.products

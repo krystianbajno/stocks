@@ -21,4 +21,3 @@ class StateAssetsRefreshSystem(System):
                 asset,
                 *new_info
             )
-

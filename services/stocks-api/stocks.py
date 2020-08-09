@@ -2,10 +2,10 @@ import time
 
 from app.App import App
 from app.enum.EntityEnum import EntityEnum
-from config.Assets import config as assets_config
 from app.providers.AppEntityProvider import AppEntityProvider
 from app.providers.AppServiceProvider import AppServiceProvider
 from app.providers.AppSystemProvider import AppSystemProvider
+from config.Assets import config as assets_config
 
 
 def main():

@@ -10,4 +10,3 @@ class ExchangeRateUpdater:
     ):
         exchange_rate.set_value_of_base_asset_in_compared_asset_bid(new_price_bid)
         exchange_rate.set_value_of_base_asset_in_compared_asset_ask(new_price_ask)
-

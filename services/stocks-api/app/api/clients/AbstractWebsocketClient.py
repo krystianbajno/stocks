@@ -26,7 +26,7 @@ class AbstractWebsocketClient(object):
     def _connect(self):
         if self.url[-1] == "/":
             self.url = self.url[:-1]
-     
+
         self.ws = create_connection(self.url)
         self.ws.send(json.dumps(self.sub_params))
 
@@ -60,18 +60,18 @@ class AbstractWebsocketClient(object):
         self.on_close()
 
     def close(self):
-        self.stop = True  
+        self.stop = True
         self._disconnect()
         self.thread.join()
 
     def on_open(self):
-       pass
+        pass
 
     def on_close(self):
-       pass
+        pass
 
     def on_message(self, msg):
-       pass
+        pass
 
     def on_error(self, e, data=None):
-       pass
+        pass
