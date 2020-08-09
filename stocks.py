@@ -139,7 +139,7 @@ class ForexApi(AbstractAPI):
         response = self.decryptor(self.client.get('https://www.oanda.com/lfr/rates_lrrr?tstamp='+str(int(time.time()))).text)
         return map(unpackAssetLine, response.split('\n'))
 
-class AbstractTable:
+class AbstractAssetTable:
     assetsTable = {}
     def setAssetExchangePriceByCodeBidValue(self, code, bid_value):
         self.assetsTable[code] = bid_value
@@ -150,7 +150,7 @@ class AbstractTable:
     def resolvableFor(self):
         pass
 
-class CryptoTable(AbstractTable):
+class CryptoAssetTable(AbstractAssetTable):
     def __init__(self, api: CryptoApi):
         self.api = api
 
@@ -162,7 +162,7 @@ class CryptoTable(AbstractTable):
     def resolvableFor(self):
         return self.api.client.products
 
-class ForexTable(AbstractTable):
+class ForexAssetTable(AbstractAssetTable):
     def __init__(self, api: ForexApi):
         self.api = api
 
@@ -281,7 +281,7 @@ class StatePrinter:
         self.loader.step()
         
 
-class TableResolver:
+class AssetTableResolver:
     def __init__(self, tables):
         self.tables = tables
 
@@ -292,21 +292,20 @@ class TableResolver:
 
 class App:
     configuration = {}
-    providers = {}
     services = {}
     systems = []
     entities = {}
 
-    def registerEntity(self, name, entity):
+    def addEntity(self, name, entity):
         self.entities[name] = entity
 
-    def registerSystem(self, function):
+    def addSystem(self, function):
         self.systems.append(function(self))
 
     def register(self, module, class_name):
         class_ = getattr(module, class_name)
         provider = class_(self)
-        self.providers[class_name] = provider.register()
+        provider.register()
 
     def configure(self, name, config):
         self.configuration[name] = config
@@ -339,15 +338,15 @@ class Provider:
 
 class AppEntityProvider(Provider):
     def register(self):
-        self.app.registerEntity("state", {})
+        self.app.addEntity("state", {})
 
 class AppSystemProvider(Provider):
     def register(self):
-        self.app.registerSystem(
-            lambda app: StateManagementSystem(app.make("StateManagement"), app.make("TableResolver"))
+        self.app.addSystem(
+            lambda app: StateManagementSystem(app.make("StateManagement"), app.make("AssetTableResolver"))
         )
 
-        self.app.registerSystem(
+        self.app.addSystem(
             lambda app: PrintStateSystem(app.make("StatePrinter"))
         )
 
@@ -363,7 +362,7 @@ class AppServiceProvider(Provider):
             return CryptoApi(app.make("CoinbaseClient"))
 
         def bindStateManagement(app):
-            exchange_rate_factory = self.app.make("ExchangeRateFactory")
+            exchange_rate_factory = app.make("ExchangeRateFactory")
             instance = StateManagement(app.entities["state"], app.make("ExchangeRateUpdater"))
             instance.initialize(map(lambda entity: exchange_rate_factory.create(entity["name"], entity["amount"]), app.config()["assets"]))
             return instance
@@ -373,11 +372,11 @@ class AppServiceProvider(Provider):
         self.app.bind("CoinbaseClient", bindCoinbaseClient)
         self.app.bind("CryptoApi", bindCryptoApi)
 
-        self.app.bind("CryptoTable", lambda app: CryptoTable(app.make("CryptoApi")))
-        self.app.bind("ForexTable", lambda app: ForexTable(app.make("ForexApi")))
-        self.app.bind("TableResolver", lambda app: TableResolver([
-            app.make("CryptoTable"),
-            app.make("ForexTable")
+        self.app.bind("CryptoAssetTable", lambda app: CryptoAssetTable(app.make("CryptoApi")))
+        self.app.bind("ForexAssetTable", lambda app: ForexAssetTable(app.make("ForexApi")))
+        self.app.bind("AssetTableResolver", lambda app: AssetTableResolver([
+            app.make("CryptoAssetTable"),
+            app.make("ForexAssetTable")
         ]))
 
         self.app.bind("ExchangeRateFactory", lambda app: ExchangeRateFactory())
@@ -420,16 +419,16 @@ class PrintStateSystem(System):
         
 def assets_configuration():
     return [
-        {"name": "EUR/PLN", "amount":1022},
-        # {"name": "USD/PLN", "amount":0},
-        # {"name": "GBP/PLN", "amount":0},
-        {"name": "EUR/USD", "amount":1022},
-        # {"name": "BTC-USD", "amount": 0.00},
-        # {"name": "BCH-USD", "amount": 0},
-        # {"name": "ETH-USD", "amount": 0},
-        {"name": "BTC-EUR", "amount": 0.001},
-        {"name": "BCH-EUR", "amount": 0},
-        {"name": "ETH-EUR", "amount": 0.5}
+        {"name": "EUR/PLN", "amount":1024},
+        {"name": "USD/PLN", "amount":1024},
+        {"name": "GBP/PLN", "amount":1024},
+        {"name": "EUR/USD", "amount":0},
+        {"name": "BTC-USD", "amount": 0.618},
+        {"name": "BCH-USD", "amount": 0.618},
+        {"name": "ETH-USD", "amount": 0.618},
+        {"name": "BTC-EUR", "amount": 0.618},
+        {"name": "BCH-EUR", "amount": 0.618},
+        {"name": "ETH-EUR", "amount": 0.618}
     ]
 
 def main():
