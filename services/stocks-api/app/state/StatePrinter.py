@@ -1,9 +1,8 @@
 from app.cli.components.Loader import Loader
-from app.entities.Entity import Entity
 
 
 class StatePrinter:
-    def __init__(self, state: Entity):
+    def __init__(self, state):
         self.state = state
         self.loader = Loader()
 
@@ -14,7 +13,7 @@ class StatePrinter:
         self.__clear()
         self.loader.step()
 
-        for exchange_rate in self.state["exchange-rate-state"].components.values():
+        for exchange_rate in self.state["exchange-rate-state"].get_components().values():
             print("[ %s ] Name: %s, Bid: %r, Ask: %r, Owned: %r, Owned Bid: %r" % (
                 self.loader.print(),
                 exchange_rate.get_asset_code(),
@@ -24,4 +23,4 @@ class StatePrinter:
                 exchange_rate.get_sum_of_owned(),
             ))
 
-        print("Should update: " + str(self.state["settings"].components["should_update"]))
+        print("Should update: " + str(self.state["settings"].get_component_by_id("should_update")))

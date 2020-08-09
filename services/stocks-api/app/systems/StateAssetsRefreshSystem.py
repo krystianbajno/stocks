@@ -13,7 +13,7 @@ class StateAssetsRefreshSystem(System):
         self.table_resolver = table_resolver
 
     def handle(self, entities):
-        for asset in entities["exchange-rate-state"].components.values():
+        for asset in entities["exchange-rate-state"].get_components().values():
             table = self.table_resolver.resolve(asset.get_asset_code())
             new_info = table.get_asset_exchange_info_by_code(asset.get_asset_code())
 
