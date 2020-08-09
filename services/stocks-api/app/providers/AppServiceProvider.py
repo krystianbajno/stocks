@@ -8,10 +8,11 @@ from app.asset_tables.AssetTableResolver import AssetTableResolver
 from app.asset_tables.CryptoAssetTable import CryptoAssetTable
 from app.asset_tables.ForexAssetTable import ForexAssetTable
 from app.cli.StatePrinter import StatePrinter
+from app.entities.ExchangeRateState import ExchangeRateState
 from app.exchange_rates.ExchangeRateFactory import ExchangeRateFactory
 from app.exchange_rates.ExchangeRateUpdater import ExchangeRateUpdater
 from app.providers.Provider import Provider
-from app.state.StateManagement import StateManagement
+from app.state.ExchangeRateStateManagement import ExchangeRateStateManagement
 
 
 class AppServiceProvider(Provider):
@@ -33,7 +34,7 @@ class AppServiceProvider(Provider):
                 )
 
             exchange_rate_factory = app.make("ExchangeRateFactory")
-            instance = StateManagement(app.entities["state"], app.make("ExchangeRateUpdater"))
+            instance = ExchangeRateStateManagement(app.get_entity_by_id(ExchangeRateState.id), app.make("ExchangeRateUpdater"))
 
             instance.initialize(
                 map(create_entity, app.config()["assets"])
@@ -61,5 +62,5 @@ class AppServiceProvider(Provider):
         self.app.bind("ExchangeRateFactory", lambda app: ExchangeRateFactory())
         self.app.bind("ExchangeRateUpdater", lambda app: ExchangeRateUpdater())
 
-        self.app.bind("StatePrinter", lambda app: StatePrinter(app.entities["state"]))
+        self.app.bind("StatePrinter", lambda app: StatePrinter(app.get_entity_by_id(ExchangeRateState.id)))
         self.app.bind("StateManagement", bind_state_management)

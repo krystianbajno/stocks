@@ -1,8 +1,9 @@
+from app.cli.StatePrinter import StatePrinter
 from app.systems.System import System
 
 
 class PrintStateSystem(System):
-    def __init__(self, state_printer):
+    def __init__(self, state_printer: StatePrinter):
         self.state_printer = state_printer
 
     def handle(self, entities):

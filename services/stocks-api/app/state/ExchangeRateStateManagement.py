@@ -1,10 +1,11 @@
+from app.entities.ExchangeRateState import ExchangeRateState
 from app.exchange_rates.ExchangeRateUpdater import ExchangeRateUpdater
 
 
-class StateManagement:
+class ExchangeRateStateManagement:
     def __init__(
             self,
-            state: dict,
+            state: ExchangeRateState,
             exchange_rate_updater: ExchangeRateUpdater
     ):
         self.state = state
@@ -12,10 +13,13 @@ class StateManagement:
 
     def initialize(self, assets):
         for asset in assets:
-            self.state[asset.get_asset_code()] = asset
+            self.state.put_component(asset.get_asset_code(), asset)
 
     def update_asset(self, asset_name, price):
-        self.exchange_rate_updater.update_price(self.state[asset_name], price)
+        self.exchange_rate_updater.update_price(
+            self.state.get_component_by_id(asset_name),
+            price
+        )
 
     def get_asset_names(self):
-        return self.state.keys()
+        return self.state.get_components().keys()

@@ -1,12 +1,12 @@
 from app.asset_tables.AssetTableResolver import AssetTableResolver
-from app.state.StateManagement import StateManagement
+from app.state.ExchangeRateStateManagement import ExchangeRateStateManagement
 from app.systems.System import System
 
 
 class StateAssetsRefreshSystem(System):
     def __init__(
             self,
-            state_management: StateManagement,
+            state_management: ExchangeRateStateManagement,
             table_resolver: AssetTableResolver
     ):
         self.state_management = state_management

@@ -1,4 +1,4 @@
-from app.entities.ExchangeRate import ExchangeRate
+from app.exchange_rates.ExchangeRate import ExchangeRate
 
 
 class ExchangeRateUpdater:
