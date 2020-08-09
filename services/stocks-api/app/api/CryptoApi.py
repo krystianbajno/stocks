@@ -8,4 +8,4 @@ class CryptoApi(AbstractAPI):
         self.client.start()
 
     def get_assets_table(self):
-        return map(lambda x: (x.get_product_id(), x.get_bid()), self.client.consume())
+        return map(lambda x: (x.get_product_id(), x.get_bid(), x.get_ask()), self.client.consume())

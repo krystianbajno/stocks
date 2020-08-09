@@ -1,22 +1,24 @@
 from app.asset_tables.AssetTableResolver import AssetTableResolver
-from app.state.ExchangeRateStateManagement import ExchangeRateStateManagement
+from app.exchange_rates.ExchangeRateUpdater import ExchangeRateUpdater
 from app.systems.System import System
 
 
 class StateAssetsRefreshSystem(System):
     def __init__(
             self,
-            state_management: ExchangeRateStateManagement,
+            exchange_rate_updater: ExchangeRateUpdater,
             table_resolver: AssetTableResolver
     ):
-        self.state_management = state_management
+        self.exchange_rate_updater = exchange_rate_updater
         self.table_resolver = table_resolver
 
-    def handle(self, entity):
-        updated_tables = []
-        for asset_name in self.state_management.get_asset_names():
-            table = self.table_resolver.resolve(asset_name)
-            if not table in updated_tables:
-                table.update()
-                updated_tables.append(table)
-            self.state_management.update_asset(asset_name, table.get_asset_exchange_price_by_code(asset_name))
+    def handle(self, entities):
+        for asset in entities["exchange-rate-state"].components.values():
+            table = self.table_resolver.resolve(asset.get_asset_code())
+            new_info = table.get_asset_exchange_info_by_code(asset.get_asset_code())
+
+            if new_info:
+                self.exchange_rate_updater.update(
+                    asset,
+                    *new_info
+                )

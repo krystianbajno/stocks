@@ -8,8 +8,8 @@ class CryptoAssetTable(AbstractAssetTable):
 
     def update(self):
         for product in self.api.get_assets_table():
-            asset, bid = product
-            self.set_asset_exchange_price_by_code_bid_value(asset, bid)
+            asset, bid, ask = product
+            self.set_asset_exchange_info_by_code(asset, bid, ask)
     
     def resolvable_for(self):
         return self.api.client.products

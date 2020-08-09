@@ -1,4 +1,4 @@
-from app.cli.StatePrinter import StatePrinter
+from app.state.StatePrinter import StatePrinter
 from app.systems.System import System
 
 

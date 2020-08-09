@@ -1,3 +1,4 @@
+import time
 from threading import Thread
 from typing import Callable
 
@@ -6,6 +7,7 @@ from app.entities.Entity import Entity
 
 class App:
     configuration = {}
+    providers = []
     services = {}
     systems = []
     entities = {}
@@ -22,6 +24,7 @@ class App:
     def register(self, provider) -> None:
         provider = provider(self)
         provider.register()
+        self.providers.append(provider)
 
     def configure(self, name, config) -> None:
         self.configuration[name] = config
@@ -35,7 +38,7 @@ class App:
     def make(self, name):
         return self.services[name]
 
-    def run_systems(self, tick: Callable) -> None:
+    def __run_systems(self, tick: Callable) -> None:
         def run_system(s):
             while True:
                 s.handle(self.entities)
@@ -44,3 +47,11 @@ class App:
         for system in self.systems:
             thread = Thread(target=run_system, args=[system])
             thread.start()
+
+    def boot(self):
+        for provider in self.providers:
+            provider.boot()
+
+        self.__run_systems(
+            lambda: time.sleep(self.configuration["system"]["system_tick"])
+        )

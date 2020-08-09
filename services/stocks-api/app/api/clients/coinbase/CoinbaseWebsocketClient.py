@@ -17,6 +17,7 @@ class CoinbaseWebsocketClient(AbstractWebsocketClient):
         if "product_id" in msg and "best_bid" in msg:
             coinbase_response = CoinbaseResponse()
             coinbase_response.set_bid(msg["best_bid"])
+            coinbase_response.set_ask(msg["best_ask"])
             coinbase_response.set_product_id(msg["product_id"])
             self.responses.append(coinbase_response)
 

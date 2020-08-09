@@ -8,7 +8,7 @@ class ForexAssetTable(AbstractAssetTable):
 
     def update(self):
         for asset, bid in self.api.get_assets_table():
-            self.set_asset_exchange_price_by_code_bid_value(asset, bid)
+            self.set_asset_exchange_info_by_code(asset, bid, None)
 
     def resolvable_for(self):
         return ["AUD/CAD", "AUD/CHF", "AUD/HKD", "AUD/JPY", "AUD/NZD", "AUD/SGD", "AUD/USD", "CAD/CHF", "CAD/HKD",

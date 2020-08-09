@@ -3,6 +3,11 @@ class Entity:
     id = None
     components = {}
 
+    def __init__(self):
+        self.is_alive = True
+        self.id = None
+        self.components = {}
+
     def set_id(self, identifier: str) -> None:
         self.id = identifier
 
