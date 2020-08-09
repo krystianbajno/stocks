@@ -1,8 +1,8 @@
-import time
 from threading import Thread
-from typing import Callable
+from typing import Callable, Any
 
 from app.entities.Entity import Entity
+from app.systems.System import System
 
 
 class App:
@@ -12,13 +12,17 @@ class App:
     systems = []
     entities = {}
 
-    def add_entity(self, entity: Entity) -> None:
+    def add_entity(self, function: Callable[[Any], Entity]) -> None:
+        entity = function(self)
         self.entities[entity.get_id()] = entity
 
-    def get_entity_by_id(self, identifier):
+    def remove_entity(self, label) -> None:
+        del self.entities[label]
+
+    def get_entity_by_id(self, identifier) -> Entity:
         return self.entities[identifier]
 
-    def add_system(self, function: Callable) -> None:
+    def add_system(self, function: Callable[[Any], System]) -> None:
         self.systems.append(function(self))
 
     def register(self, provider) -> None:
@@ -38,7 +42,7 @@ class App:
     def make(self, name):
         return self.services[name]
 
-    def __run_systems(self, tick: Callable) -> None:
+    def run_systems(self, tick: Callable) -> None:
         def run_system(s):
             while True:
                 s.handle(self.entities)
@@ -51,7 +55,3 @@ class App:
     def boot(self):
         for provider in self.providers:
             provider.boot()
-
-        self.__run_systems(
-            lambda: time.sleep(self.configuration["system"]["system_tick"])
-        )

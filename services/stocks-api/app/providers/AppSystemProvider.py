@@ -9,7 +9,7 @@ class AppSystemProvider(Provider):
         self.app.add_system(
             lambda app: ExchangeTablesRefreshSystem(
                 app.make("AssetTableResolver"),
-                app.config()["system"]["system_tick"]
+                app.config()["settings"]["system_tick"]
             )
         )
 

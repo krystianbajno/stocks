@@ -1,26 +1,28 @@
-from app.entities.Entity import Entity
+from app.entities.builders.EntityBuilder import EntityBuilder
+from app.entities.directors.ExchangeRateStateDirector import ExchangeRateStateDirector
+from app.entities.directors.SettingsDirector import SettingsDirector
 from app.providers.Provider import Provider
 
 
 class AppEntityProvider(Provider):
-    def boot(self):
-        exchange_rate_factory = self.app.make("ExchangeRateFactory")
-
-        exchange_rate_state = Entity()
-        exchange_rate_state.set_id("exchange-rate-state")
-
-        for asset in self.app.config()["assets"]:
-            exchange_rate_state.put_component(
-                asset["name"],
-                exchange_rate_factory.create(
-                    asset["name"],
-                    asset["amount"]
-                )
+    def register(self):
+        def register_exchange_rate_state_director(app):
+            exchange_rate_factory = app.make("ExchangeRateFactory")
+            entity_builder = app.make("EntityBuilder")
+            return ExchangeRateStateDirector(
+                app.config()["assets"],
+                exchange_rate_factory,
+                entity_builder
             )
-        self.app.add_entity(exchange_rate_state)
 
-        settings = Entity()
-        settings.set_id("settings")
-        settings.put_component("should_update", True)
-        self.app.add_entity(settings)
+        def register_settings_director(app):
+            entity_builder = app.make("EntityBuilder")
+            return SettingsDirector(entity_builder, app.config()["settings"])
 
+        self.app.bind("EntityBuilder", lambda app: EntityBuilder())
+        self.app.bind("ExchangeRateStateDirector", register_exchange_rate_state_director)
+        self.app.bind("SettingsDirector", register_settings_director)
+
+    def boot(self):
+        self.app.add_entity(lambda app: app.make('ExchangeRateStateDirector').build())
+        self.app.add_entity(lambda app: app.make('SettingsDirector').build())

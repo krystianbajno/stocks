@@ -2,9 +2,10 @@ import time
 from threading import Thread
 
 from app.asset_tables.AssetTableResolver import AssetTableResolver
+from app.systems.System import System
 
 
-class ExchangeTablesRefreshSystem:
+class ExchangeTablesRefreshSystem(System):
     def __init__(self, table_resolver: AssetTableResolver, thread_sleep):
         self.is_threaded = False
         self.thread_sleep = thread_sleep
