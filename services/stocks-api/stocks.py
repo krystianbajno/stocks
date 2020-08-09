@@ -1,6 +1,7 @@
 import time
 
 from app.App import App
+from app.enum.EntityEnum import EntityEnum
 from config.Assets import config as assets_config
 from app.providers.AppEntityProvider import AppEntityProvider
 from app.providers.AppServiceProvider import AppServiceProvider
@@ -24,8 +25,8 @@ def main():
     boot_application.boot()
 
     boot_application.run_systems(
-        lambda: time.sleep(
-            boot_application.get_entity_by_id("settings")
+        lambda entities: time.sleep(
+            entities[EntityEnum.SETTINGS.value]
                 .get_component_by_id("system_tick")
         )
     )

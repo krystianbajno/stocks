@@ -46,7 +46,7 @@ class App:
         def run_system(s):
             while True:
                 s.handle(self.entities)
-                tick()
+                tick(self.entities)
 
         for system in self.systems:
             thread = Thread(target=run_system, args=[system])
