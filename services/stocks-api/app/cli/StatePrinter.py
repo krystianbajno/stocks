@@ -14,12 +14,11 @@ class StatePrinter:
         self.__clear()
         self.loader.step()
 
-        for key in self.state.get_components():
-            asset = self.state.get_component_by_id(key)
+        for exchange_rate in self.state.exchange_rates():
             print("[ %s ] Name: %s, Owned: %r, Bid: %r, Owned Summary: %r" % (
                 self.loader.print(),
-                asset.get_asset_code(),
-                asset.get_amount_of_compared_asset(),
-                asset.get_value_of_base_asset_in_compared_asset(),
-                asset.get_sum_of_owned(),
+                exchange_rate.get_asset_code(),
+                exchange_rate.get_amount_of_compared_asset(),
+                exchange_rate.get_value_of_base_asset_in_compared_asset(),
+                exchange_rate.get_sum_of_owned(),
             ))
