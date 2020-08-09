@@ -3,18 +3,17 @@ from app.enum.EntityEnum import EntityEnum
 
 
 class CliView:
-    def __init__(self, state):
-        self.state = state
+    def __init__(self):
         self.loader = Loader()
 
     def __clear(self):
         print("\033[H\033[J")
 
-    def render(self):
+    def render(self, props):
         self.__clear()
         self.loader.step()
 
-        for exchange_rate in self.state[EntityEnum.EXCHANGE_RATE_STATE.value].get_components().values():
+        for exchange_rate in props[EntityEnum.EXCHANGE_RATE_STATE.value].get_components().values():
             print("[ %s ] Name: %s, Bid: %r, Ask: %r, Owned: %r, Owned Bid: %r" % (
                 self.loader.print(),
                 exchange_rate.get_asset_code(),
@@ -24,4 +23,4 @@ class CliView:
                 exchange_rate.get_sum_of_owned(),
             ))
 
-        print("Should update: " + str(self.state[EntityEnum.SETTINGS.value].get_component_by_id("should_update")))
+        print("Should update: " + str(props[EntityEnum.SETTINGS.value].get_component_by_id("should_update")))

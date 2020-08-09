@@ -7,4 +7,4 @@ class RenderSystem(System):
         self.state_printer = state_printer
 
     def handle(self, entities):
-        self.state_printer.render()
+        self.state_printer.render(entities)

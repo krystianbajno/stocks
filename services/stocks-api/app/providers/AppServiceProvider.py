@@ -22,7 +22,7 @@ class AppServiceProvider(Provider):
             return CoinbaseWebsocketClient()
 
         def bind_crypto_api(app):
-            return CryptoApi(app.make("CoinbaseClient"))
+            return CryptoApi(app.make(CoinbaseWebsocketClient.__name__))
 
         def forex_api_decryptor(to_decrypt):
             return ARC4.new(b'aaf6cb4f0ced8a211c2728328597268509ade33040233a11af') \
@@ -30,19 +30,18 @@ class AppServiceProvider(Provider):
                 .decode("UTF-8")
 
         self.app.bind("ForexDecryptor", lambda app: forex_api_decryptor)
-        self.app.bind("ForexApi", bind_forex_api)
-        self.app.bind("CoinbaseClient", bind_coinbase_client)
-        self.app.bind("CryptoApi", bind_crypto_api)
+        self.app.bind(ForexApi.__name__, bind_forex_api)
+        self.app.bind(CoinbaseWebsocketClient.__name__, bind_coinbase_client)
+        self.app.bind(CryptoApi.__name__, bind_crypto_api)
 
-        self.app.bind("CryptoAssetTable", lambda app: CryptoAssetTable(app.make("CryptoApi")))
-        self.app.bind("ForexAssetTable", lambda app: ForexAssetTable(app.make("ForexApi")))
+        self.app.bind(CryptoAssetTable.__name__, lambda app: CryptoAssetTable(app.make(CryptoApi.__name__)))
+        self.app.bind(ForexAssetTable.__name__, lambda app: ForexAssetTable(app.make(ForexApi.__name__)))
 
-        self.app.bind("AssetTableResolver", lambda app: AssetTableResolver([
-            app.make("CryptoAssetTable"),
-            app.make("ForexAssetTable")
+        self.app.bind(AssetTableResolver.__name__, lambda app: AssetTableResolver([
+            app.make(CryptoAssetTable.__name__),
+            app.make(ForexAssetTable.__name__)
         ]))
 
-        self.app.bind("ExchangeRateFactory", lambda app: ExchangeRateFactory())
-        self.app.bind("ExchangeRateUpdater", lambda app: ExchangeRateUpdater())
-
-        self.app.bind("RenderSystem", lambda app: CliView(app.entities))
+        self.app.bind(ExchangeRateFactory.__name__, lambda app: ExchangeRateFactory())
+        self.app.bind(ExchangeRateUpdater.__name__, lambda app: ExchangeRateUpdater())
+        self.app.bind(CliView.__name__, lambda app: CliView())
