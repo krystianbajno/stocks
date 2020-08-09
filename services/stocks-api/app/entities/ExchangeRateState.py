@@ -6,6 +6,6 @@ class ExchangeRateState(Entity):
 
     def exchange_rates(self):
         return map(
-            lambda key: self.get_component_by_id(key),
-            self.get_components()
+            lambda key: self.components[key],
+            self.components
         )
